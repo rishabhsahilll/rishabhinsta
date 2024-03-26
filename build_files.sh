@@ -8,7 +8,6 @@ source myenv/bin/activate
 
 # Dependencies install karna
 
-python3.9 -m pip install django
 python3.9 -m pip install asgiref==3.7.2
 python3.9 -m pip install boto3==1.14.32
 python3.9 -m pip install botocore==1.17.32
@@ -34,6 +33,7 @@ python3.9 -m pip install urllib3
 python3.9 -m pip install django-cloudinary-storage
 python3.9 -m pip install dj-database-url
 python3.9 -m pip install psycopg2-binary
+
 
 # Migrations banana
 echo "Make Migration"
