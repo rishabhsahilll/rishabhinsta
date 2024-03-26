@@ -13,7 +13,7 @@ python3.9 -m pip install boto3==1.14.32
 python3.9 -m pip install botocore==1.17.32
 python3.9 -m pip install channels==4.0.0
 python3.9 -m pip install daphne
-python3.9 -m pip install Django==5.0.1
+python3.9 -m pip install Django
 python3.9 -m pip install django-appconf==1.0.4
 python3.9 -m pip install django-crispy-forms==1.9.2
 python3.9 -m pip install django-imagekit
