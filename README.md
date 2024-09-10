@@ -22,7 +22,9 @@ This project is basic social media features.
 ### Upcoming Feature List:
 - Twit
 - Short video
--  Attractive ui designs **Developer [Mr. Boricha](https://www.instagram.com/yax_ahir_07/)**
+- Attractive ui designs **Developer [Mr. Boricha](https://www.instagram.com/yax_ahir_07/)**
+- Daily positive thoughts suggestions.
+- A.I Bot
 
 ### Tech Stack
 Python, Django, HTML, CSS, Bootstrap, JavaScript, AJAX, Django Channels, Websocket
