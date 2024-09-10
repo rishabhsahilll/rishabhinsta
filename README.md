@@ -19,6 +19,11 @@ This project is basic social media features.
 - Mobile responsive
 - Infinity scroll and much more. 
 
+### Upcoming Feature List:
+- Twit
+- Short video
+-  Attractive ui designs **Developer [Mr. Boricha](https://www.instagram.com/yax_ahir_07/)**
+
 ### Tech Stack
 Python, Django, HTML, CSS, Bootstrap, JavaScript, AJAX, Django Channels, Websocket
 
