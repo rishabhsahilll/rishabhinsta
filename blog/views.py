@@ -17,6 +17,7 @@ from users.models import UserReport
 from users.models import Profile
 from .forms import CommentForm, ReportPostForm, PostForm, TwitForm, TwitCommentForm, TwitReportForm
 from footer.models import Quote
+import requests
 
 def quotes():
     quote = Quote.objects.all()
@@ -25,15 +26,24 @@ def quotes():
         list = quote.heading,quote.quote,quote.link
         quote_list.append(list)
     try:
-        data = {
-            "heading": quote_list[-1][0],
-            "quotes_text": quote_list[-1][1],
-            "quotes_link": quote_list[-1][2]
-        }
-        return data
+        if str(quote_list[-1][1]).lower()=="none":
+            response2 = requests.get('https://zenquotes.io/api/random/')
+            randomq = response2.json()
+            data = {
+                "heading": quote_list[-1][0],
+                "quotes_text": f"‶{str(randomq[0]['q']).replace('Too many requests. Obtain an auth key for unlimited access.', 'Everything comes to you at the right time. Be patient.')}‶",
+                "quotes_link": f"https://sahil87096.pythonanywhere.com/quote/authors/{str(randomq[0]['a']).lower().replace('zenquotes.io','rishabh-sahil').replace(' ','-').replace('.','_').replace('unknown','rishabh-sahil')}/en"
+            }
+            return data
+        else:
+            data = {
+                "heading": quote_list[-1][0],
+                "quotes_text": quote_list[-1][1],
+                "quotes_link": quote_list[-1][2]
+            }
+            return data
     except:
         return None
-
 @login_required
 def home_view(request):
     user = request.user
