@@ -4,7 +4,6 @@ from .models import ChatRoom, Message
 from footer.models import Quote
 import requests
 
-
 def quotes():
     quote = Quote.objects.all()
     quote_list = []
