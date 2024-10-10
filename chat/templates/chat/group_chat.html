@@ -16,7 +16,8 @@
                     <small class="text-muted">{{ message.timestamp }}</small>
                 </div>
                 {% if message.sender.profile.image_thumbnail_user %}
-                <img src="{{ message.sender.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">
+                <!-- <img src="{{ message.sender.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile"> -->
+                <img src="/media/{{ message.sender.profile.image }}" class="rounded-circle chat-image" alt="Profile">
                 {% else %}
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle chat-image" alt="Profile">
                 {% endif %}
@@ -25,7 +26,7 @@
             <div class="d-flex justify-content-start">
                 <!-- Profile image on the left for the other user -->
                 {% if message.sender.profile.image_thumbnail_user %}
-                <img src="{{ message.sender.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">
+                <img src="/media/{{ message.sender.profile.image}}" class="rounded-circle chat-image" alt="Profile">
                 {% else %}
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle chat-image" alt="Profile">
                 {% endif %}
@@ -46,8 +47,9 @@
 <script type="text/javascript">
     const room_name = `{{ room_name }}`
 
-    let url = `ws://${window.location.host}/ws/chat/${room_name}/`;
-    const chatSocket = new WebSocket(url);
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const url = `${wsProtocol}//${window.location.host}/ws/chat/${room_name}/`;
+    // let url = `ws://${window.location.host}/ws/chat/${room_name}/`;
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);

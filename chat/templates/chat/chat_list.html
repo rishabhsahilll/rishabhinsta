@@ -24,12 +24,18 @@
               {% if participant.username != request.user.username %}
               <li class="list-group-item">
                 {% if participant.profile.image_thumbnail_user %}
-                <img src="{{ participant.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">
+                <!-- <img src="{{ participant.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile"> -->
+                <img src="/media/{{ participant.profile.image }}" class="rounded-circle chat-image" alt="Profile">
                 {% else %}
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                   class="rounded-circle chat-image" alt="Profile">
                 {% endif %}
-                <a href="{% url 'chat:chat' participant.username %}">{{ participant.username }}</a>
+                <a href="{% url 'chat:chat' participant.username %}">{{ participant.username }}
+                   {% if participant.is_staff %}
+                <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+              {% else %}
+                  {% endif %}
+                  </a>
               </li>
               {% endif %}
           {% endfor %}
@@ -63,7 +69,12 @@
             <div class="form-check">
               <input type="checkbox" class="form-check-input" id="{{ participant.username }}" name="participants"
                 value="{{ participant.username }}">
-              <label class="form-check-label" for="{{ participant.username }}">{{ participant.username }}</label>
+              <label class="form-check-label" for="{{ participant.username }}">{{ participant.username }}
+                 {% if participant.is_staff %}
+                <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+              {% else %}
+                  {% endif %}
+                  </label>
             </div>
             {% endfor %}
           </div>

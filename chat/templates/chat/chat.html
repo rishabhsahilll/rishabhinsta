@@ -4,14 +4,19 @@
 <div class="content-section">
     <div style="display: flex; align-items: center;">
         {% if chat_user.profile.image_thumbnail_user %}
-            <img src="{{ chat_user.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">    
+            <!-- <img src="{{ chat_user.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">     -->
+            <img src="/media/{{ chat_user.profile.image }}" class="rounded-circle chat-image" alt="Profile">
         {% else %}
-            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle chat-image" alt="Profile">    
+            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle chat-image" alt="Profile">
         {% endif %}
-        <p><b>{{ chat_user.username }}</b></p>
+        <p><b>{{ chat_user.username }}
+            {% if chat_user.is_staff %}
+            <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+        {% else %}
+    {% endif %}</b></p>
     </div>
     <hr>
-    
+
     <div id="messages">
     {% for message in history_messages %}
         {% if message.sender == request.user %}
@@ -21,7 +26,8 @@
                     <small class="text-muted">{{ message.timestamp }}</small>
                 </div>
                 {% if message.sender.profile.image_thumbnail_user %}
-                    <img src="{{ message.sender.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">
+                    <!-- <img src="{{ message.sender.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile"> -->
+                    <img src="/media/{{ message.sender.profile.image }}" class="rounded-circle chat-image" alt="Profile">
                 {% else %}
                     <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle chat-image" alt="Profile">
                 {% endif %}
@@ -30,7 +36,7 @@
             <div class="d-flex justify-content-start">
                 <!-- Profile image on the left for the other user -->
                 {% if message.sender.profile.image_thumbnail_user %}
-                    <img src="{{ message.sender.profile.image_thumbnail_user.url }}" class="rounded-circle chat-image" alt="Profile">
+                    <img src="/media/{{ message.sender.profile.image }}" class="rounded-circle chat-image" alt="Profile">
                 {% else %}
                     <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle chat-image" alt="Profile">
                 {% endif %}
@@ -39,7 +45,7 @@
                     <small class="text-muted">{{ message.timestamp }}</small>
                 </div>
             </div>
-            
+
         {% endif %}
     {% endfor %}
 </div>
@@ -55,13 +61,13 @@
     const url = `${wsProtocol}//${window.location.host}/ws/chat/${room_name}/`;
     // let url = `ws://${window.location.host}/ws/chat/${room_name}/`;
 
-    
+
     const chatSocket = new WebSocket(url);
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         console.log('Data:', data);
-        
+
         if (data.type == 'chat'){
             let messages = document.getElementById("messages")
             let messageHTML = '';
@@ -90,7 +96,7 @@
                 </div>
             `;
         }
-        
+
         messages.insertAdjacentHTML('beforeend', messageHTML);
         }
     };
