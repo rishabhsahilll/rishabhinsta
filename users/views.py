@@ -1,6 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm,ReportUserForm
+from blog.models import Post, Notification
 from django.contrib.auth.models import User
-from .models import ChatRoom, Message
+from django.http import JsonResponse
 from footer.models import Quote
 import requests
 
@@ -29,79 +37,116 @@ def quotes():
             return data
     except:
         return None
-    
-def chat_list(request):
 
+def register(request):
     if request.method == 'POST':
-        group_name = request.POST.get('group_name')
-        participants_usernames = request.POST.getlist('participants')
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Your account has been created!\
+                            You are now able to log in')
+            return redirect('login')
+    else:
+        form = UserRegisterForm()
 
-        # Create a new ChatRoom with the provided data
-        chat_room = ChatRoom.objects.create(
-            room_name="group_"+str(ChatRoom.objects.count() + 1),  # Assuming you want a unique room_name
-            is_group_chat=True,
-            group_name=group_name
-        )
+    context = {'form': form,"quotes":quotes()}
+    template_name = 'users/register.html'
 
-        # Add the creator (request.user) to the participants
-        chat_room.participants.add(request.user)
+    return render(request, template_name, context)
 
-        # Add the selected participants to the group
-        participants = User.objects.filter(username__in=participants_usernames)
-        chat_room.participants.add(*participants)
-
-        # Redirect to the chat list page after successful creation
-        return redirect('chat:chat_list')
-
-    chat_rooms = ChatRoom.objects.filter(participants=request.user)
-    all_participants = request.user.profile.followers.all()
-
-    context = {'chat_rooms': chat_rooms, 'all_participants': all_participants,"quotes":quotes()}
-    return render(request, "chat/chat_list.html", context)
+def validate_username(request):
+    username = request.GET.get('username',None)
+    data = {
+        'is_taken':User.objects.filter(username__iexact=username).exists()
+    }
+    print(data)
+    return JsonResponse(data)
 
 
-def chat(request, username:str):
-    """
-    username: Is other user's username
-    """
-    chat_user = User.objects.get(username=username)
-    room_name = "room_" + str(min(chat_user.id, request.user.id)) \
-        + "_" + str(max(chat_user.id, request.user.id))
-
-    chat_room, created = ChatRoom.objects.get_or_create(room_name=room_name)
-    chat_room.participants.add(request.user)
-
-    messages = Message.objects.filter(
-        room=chat_room).order_by('timestamp')
-
-    context={"room_name": room_name,
-            "chat_user": chat_user,
-            "history_messages": messages,
-            "quotes":quotes()}
-
-    return render(request, "chat/chat.html", context)
-
-
-def group_chat(request, room_name):
-    """
-    room_name: Room name for the group chat
-    """
+# @login_required
+def profile(request,username=None):
+    report_form = ReportUserForm()
+    user =  get_object_or_404(User,username=username)
+    post_list = Post.objects.filter(author=user).order_by('-id')
+    post_count = post_list.count()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(post_list, 9000000000000)
     try:
-        chat_room = ChatRoom.objects.get(room_name=room_name, is_group_chat=True)
-    except ChatRoom.DoesNotExist:
-        # Handle the case where the group chat room doesn't exist
-        # You can redirect the user to an error page or any other appropriate action
-        return render(request, "chat/group_chat_not_found.html")
-
-    participants = chat_room.participants.values_list('id', flat=True)
-    messages = Message.objects.filter(room=chat_room).order_by('timestamp')
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
 
     context = {
-        "room_name": room_name,
-        "participants": participants,
-        "history_messages": messages,
-        "chat_room": chat_room,
+        'report_form':report_form,
+        'posts':posts,
+        'user_id':user,
+        'post_count':post_count,
         "quotes":quotes()
     }
+    template_name = 'users/profile.html'
 
-    return render(request, "chat/group_chat.html", context)
+    return render(request, template_name, context)
+
+@login_required
+def updateProfile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST,
+                                   request.FILES,
+                                   instance=request.user.profile)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('profile',username=request.user.username)
+        else:
+            messages.error(request, f'Username already exists or in use!')
+            return redirect('profile-update')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+        context = {
+            'u_form': u_form,
+            'p_form': p_form,
+            "quotes":quotes()
+        }
+        template_name = 'users/update_profile.html'
+
+        return render(request, template_name, context)
+
+
+@login_required
+def userFollowUnfollow(request,pk=None):
+    current_user = request.user
+    other_user = User.objects.get(pk=pk)
+
+    if other_user not in current_user.profile.follows.all():
+        current_user.profile.follows.add(other_user)
+        other_user.profile.followers.add(current_user)
+
+        notify = Notification.objects.create(sender=current_user,receiver=other_user,action="started following you.")
+
+    else:
+        current_user.profile.follows.remove(other_user)
+        other_user.profile.followers.remove(current_user)
+    return redirect('profile',username=other_user.username)
+
+
+@login_required
+def  change_password(request):
+    if request.method == 'POST':
+        form  =  PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('profile',username=request.user.username)
+        else:
+            return redirect('change-password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form':form,"quotes":quotes()}
+        return render(request, 'users/change_password.html',args)

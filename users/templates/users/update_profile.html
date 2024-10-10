@@ -1,8 +1,8 @@
-{% extends "blog/base.html" %} 
+{% extends "blog/base.html" %}
 {% load static %}
-{% load crispy_forms_tags %} 
+{% load crispy_forms_tags %}
 
-{% block title %}<title> @{{request.user.username}} profile update - rishabh-insta</title>{% endblock %}
+{% block title %}<title> @{{request.user.username}} profile update - Livyn</title>{% endblock %}
 
 {% block content %}
 <div class="content-section">
@@ -13,14 +13,14 @@
                 <legend class="mb-3">Update Profile
                 </legend>
             </div>
-            {{ u_form|crispy }} 
+            {{ u_form|crispy }}
             {{ p_form|crispy }}
         </fieldset>
         <div class="form-group">
             <button class="btn btn-info btn-sm" type="submit" id="submit-update-btn">Update</button>
         </div>
     </form>
-    
+
     <div class="border-top pt-3" >
         <small class="text-muted">
             <b>Change Password?</b>
@@ -41,15 +41,16 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        // $('#div_id_image').children('div').addClass('currentPhoto');
-        // $('.currentPhoto').children('a').hide();
-        // let isTextNode = (_, el) => el.nodeType === Node.TEXT_NODE;
-        // $('.currentPhoto').contents().filter(isTextNode).remove();
-        // var img = document.createElement("IMG");
+        $('#div_id_image').children('div').addClass('currentPhoto');
+        $('.currentPhoto').children('a').hide();
+        let isTextNode = (_, el) => el.nodeType === Node.TEXT_NODE;
+        $('.currentPhoto').contents().filter(isTextNode).remove();
+        var img = document.createElement("IMG");
         // img.src = '{{ user.profile.image_thumbnail_user.url }}';
-        // img.setAttribute('class', 'account-img');
-        // $('.currentPhoto').prepend('<br>Change Image'); 
-        // $('.currentPhoto').prepend(img);
+        img.src = '/media/{{ user.profile.image }}';
+        img.setAttribute('class', 'account-img');
+        $('.currentPhoto').prepend('<br>Change Image');
+        $('.currentPhoto').prepend(img);
         $('#hint_id_camps').html('Add comma between Camps you have attended!');
         $('#div_id_camps label').html('Camps*');
 

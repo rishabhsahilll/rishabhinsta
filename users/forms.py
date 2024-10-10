@@ -26,9 +26,13 @@ class ProfileUpdateForm(forms.ModelForm):
     camps = TaggableManager(verbose_name=u'Pasta')
     class Meta:
         model = Profile
-        fields = ['image','name','description','wing','camps']
+        fields = ['image','name','description','wing','camps','date_of_birth']
 
-
+ # You can customize the date_of_birth field here if needed
+    date_of_birth = forms.DateField(
+        widget=forms.TextInput(attrs={'class': 'dateinput', 'id': 'id_date_of_birth', 'type':'date'}),
+        required=False
+    )
 class ReportUserForm(forms.ModelForm):
     class Meta:
         model = UserReport
