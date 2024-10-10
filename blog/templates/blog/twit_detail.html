@@ -7,7 +7,7 @@
 {% endblock %}
 
 
-{% block title %}<title> {{post.title}} - rishabh-insta</title>{% endblock %}
+{% block title %}<title> {{post.title}} - Livyn</title>{% endblock %}
 
 {% block content %}
   <article class="content-section-details">
@@ -90,7 +90,8 @@
   <div class="comments-inside">
     <a class="link-style-none" href="{% url 'profile' comment.author.username %}">
       {% if comment.author.profile.image_thumbnail_user %}
-        <img class="rounded-circle article-img-comment" src="{{comment.author.profile.image_thumbnail_user.url}}" width="55">
+        <!-- <img class="rounded-circle article-img-comment" src="{{comment.author.profile.image_thumbnail_user.url}}" width="55"> -->
+        <img class="rounded-circle article-img-comment" src="/media/{{comment.author.profile.image}}" width="55">
       {% else %}
         <img class="rounded-circle article-img-comment" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" width="55">
       {% endif %}

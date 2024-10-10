@@ -7,19 +7,19 @@
 
 </style>
     <div class="content-section">
-        <form action="{% url 'blog:post-create' %}" method="POST" id="post-form">
+        <form action="{% url 'blog:video-create' %}" method="POST" id="post-form">
             {% csrf_token %}
             <fieldset class="form-group">
                 <!-- {{form | crispy}} -->
-                <legend class="border-bottom mb-4">Add Image</legend>
+                <legend class="border-bottom mb-4">Add Video</legend>
                 Title*<br>
                 {{form.title}}<br>
                 Content*<br>
                 {{form.content}}<br>
     
                 <!-- Image Capture Section -->
-                <h4>Image*</h4>
-                {{ form.image }}
+                <h4>Video*</h4>
+                {{ form.video }}
             </fieldset>
             <div class="form-group" style="display: flex;justify-content: flex-end;">
                 <button class="btn btn-info btn-sm" type="submit" id="form-submit" style="padding: 5px 25px">Post</button>
@@ -58,7 +58,7 @@
                 });
                 return xhr;
             },
-            url : "{% url 'blog:post-create' %}",
+            url : "{% url 'blog:video-create' %}",
             type : "POST",
             data: formData,
             processData: false,

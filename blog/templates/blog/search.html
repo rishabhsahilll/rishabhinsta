@@ -1,6 +1,6 @@
 {% extends "blog/base.html" %}
 {% block title %}
-  <title>Search & Recent Posts -  rishabh-insta</title>
+  <title>Search & Recent Posts -  Livyn</title>
 {% endblock %}
 {% block content %}
 
@@ -21,21 +21,28 @@
         <div class="resent-posts">
             <h1 class="resent-posts-heading">User result:</h1>
         </div>
-        <div class="content-section-blue"> 
-          
+        <div class="content-section-blue">
+
           {% for pro in users %}
             <div class="d-flex flex-row justify-content-between align-items-center">
                 <div class="d-flex flex-row align-items-center">
                   <a class="link-style-none" href="{% url 'profile' pro.username %}">
                     {% if pro.profile.image_thumbnail_user %}
-                      <img class="rounded-circle article-img-search" src="{{pro.profile.image_thumbnail_user.url}}" width="55">
+                      <!-- <img class="rounded-circle article-img-search" src="{{pro.profile.image_thumbnail_user.url}}" width="55"> -->
+                      <img class="rounded-circle article-img-search" src="/media/{{pro.profile.image}}" width="55">
                     {% else %}
                       <img class="rounded-circle article-img-search" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" width="55">
                     {% endif %}
                   </a>
                   <div class="d-flex flex-column align-items-start ml-2">
                     <span>{{ pro.profile.name }}</span>
-                    <a class="link-style-none" href="{% url 'profile' pro.username %}"><span class="font-weight-bold">{{pro.username}}</span></a>
+                    <a class="link-style-none" href="{% url 'profile' pro.username %}">
+                        <span class="font-weight-bold">
+                        {{pro.username}}  {% if pro.is_staff %}
+                        <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+                        {% else %}
+                         {% endif %}</span>
+                         </a>
                   </div>
                 </div>
                 <div class="d-flex flex-row align-items-center mt-2">
@@ -43,7 +50,7 @@
                     <p>following</p>
                   {% endif %}
                 </div>
-            </div>      
+            </div>
           {% endfor %}
         </div>
 
@@ -54,11 +61,14 @@
           <h1 class="resent-posts-heading">Post results for: {{search_input}}</h1>
         </div>
       {% for post in result_posts %}
-        
+
         <article class="media content-section">
           {% if post.author.profile.image_thumbnail_user %}
-            <img class="rounded-circle article-img"
-                src="{{ post.author.profile.image_thumbnail_user.url }}">
+          <!-- <img class="rounded-circle article-img"
+              src="{{ post.author.profile.image_thumbnail_user.url }}"> -->
+
+          <img class="rounded-circle article-img"
+              src="/media/{{ post.author.profile.image }}">
           {% else %}
             <img class="rounded-circle article-img"
                 src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png">
@@ -67,21 +77,30 @@
             <div class="article-metadata">
               <a class="mr-2"
                  href="{% url 'profile' post.author.username %}">{{ post.author }}
+                 {% if post.author.is_staff %}
+                 <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+               {% else %}
+                     {% endif %}
               </a>
-              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}
-              </small>
+              <small class="text-muted">{{ post.date_posted|timesince }} ago</small>
             </div>
             <h2><a class="article-title"
-                   href="{% url 'blog:post-detail' post.slug %}">{{ post.title }}
+                   href="{% url 'blog:post-detail' post.slug %}">
+                   <p class="format-text">{{ post.title }}</p>
                 </a>
             </h2>
-            <p class="article-content">{{ post.content|truncatewords:30}}</p>
+            <p class="article-content format-text">{{ post.content|truncatewords:30}}</p>
             <a class="read-more" href="{% url 'blog:post-detail' post.slug %}"><small>Read More</small></a>
 
             <div class="post-applause">
-              <span class="badge badge-secondary">{{post.likes.count}} Insta Claps</span>
+              <span class="badge badge-secondary"> 
+                {% if post.likes.count == 1 %}
+                {{post.likes.count}} Like
+                {% else %}
+                {{post.likes.count}} Likes
+                {% endif %}</span>
             </div>
-            
+
           </div>
         </article>
     {% endfor %}
@@ -93,7 +112,8 @@
     {% for post in posts %}
       <article class="media content-section infinite-item">
         {% if post.author.profile.image_thumbnail_user %}
-          <img class="rounded-circle article-img" src="{{ post.author.profile.image_thumbnail_user.url }}">
+          <!-- <img class="rounded-circle article-img" src="{{ post.author.profile.image_thumbnail_user.url }}"> -->
+          <img class="rounded-circle article-img" src="/media/{{ post.author.profile.image }}">
         {% else %}
           <img class="rounded-circle article-img" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png">
         {% endif %}
@@ -101,18 +121,28 @@
             <div class="article-metadata">
               <a class="mr-2"
                  href="{% url 'profile' post.author.username %}">{{ post.author }}
+                 {% if post.author.is_staff %}
+                 <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+               {% else %}
+                     {% endif %}
               </a>
-              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}
+              <small class="text-muted">{{ post.date_posted|timesince }} ago
               </small>
             </div>
             <h2><a class="article-title"
-                   href="{% url 'blog:post-detail' post.slug %}">{{ post.title }}
+                   href="{% url 'blog:post-detail' post.slug %}">
+                   <p class="format-text">{{ post.title }}</p>
                 </a>
             </h2>
-            <p class="article-content">{{ post.content|truncatewords:30}}</p>
+            <p class="article-content format-text">{{ post.content|truncatewords:30}}</p>
             <a class="read-more" href="{% url 'blog:post-detail' post.slug %}"><small>Read More</small></a>
             <div class="post-applause">
-              <span class="badge badge-secondary">{{post.likes.count}} Insta Claps</span>
+              <span class="badge badge-secondary"> 
+                {% if post.likes.count == 1 %}
+                {{post.likes.count}} Like
+                {% else %}
+                {{post.likes.count}} Likes
+                {% endif %}</span>
             </div>
           </div>
         </article>
@@ -142,4 +172,24 @@
             }
           });
       </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const formatText = (text) => {
+          // Replace *** with <strong>
+          text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          // Replace __ with <em>
+          text = text.replace(/__(.*?)__/g, '<em>$1</em>');
+          // Replace ` with <small>
+          text = text.replace(/`(.*?)`/g, '<small>$1</small>');
+          return text;
+      };
+
+      // Apply formatting to the specific h1 element
+      document.querySelectorAll('.format-text').forEach(element => {
+          element.innerHTML = formatText(element.innerHTML);
+      });
+  });
+</script>
+
 {% endblock %}

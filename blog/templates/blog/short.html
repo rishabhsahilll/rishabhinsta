@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@{{request.user.username}} Short</title>
+  <link rel="stylesheet" href="{% static 'blog/css/short.css' %}" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="app__videos">
+    {% for post in posts %}
+    <div class="video">
+      <!-- header starts -->
+      <div class="videoHeader">
+        <span class="material-icons"> <a href="https://rishabhinsta.pythonanywhere.com/"></a>arrow_back </span>
+        <h3>Short</h3>
+        <span class="material-icons"> camera_alt </span>
+      </div>
+      <!-- header ends -->
+      {% if post.video %}
+      <video class="video__player" src="{{ post.video.url }}"></video>
+      {% else %}
+      {% endif %}
+      <!-- footer starts -->
+      <div class="videoFooter">
+        <div class="videoFooter__text">
+          
+          {% if request.user.profile.image %}
+          <img class="user__avatar" src="/media/{{ request.user.profile.image }}" alt="" />
+          {% else %}
+          <img class="user__avatar"
+            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png">
+          {% endif %}
+          <h3><a class="mr-2" href="{% url 'profile' post.author.username %}">{{ post.author }}
+            
+              {% if post.author.is_staff %}
+              <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png"
+                style="width: 15px; height: 15px; padding-right: 1PX;">
+              {% else %}
+              {% endif %}
+            </a>
+            <!-- <button>Follow</button> -->
+          </h3>
+        </div>
+
+        <div class="videoFooter__ticker">
+          <span class="material-icons"> music_note </span>
+          <marquee>Song Name</marquee>
+        </div>
+
+        <div class="videoFooter__actions">
+          <div class="videoFooter__actionsLeft">
+            <span class="material-icons"> favorite </span>
+            <span class="material-icons"> mode_comment </span>
+            <span class="material-icons"> send </span>
+            <span class="material-icons"> more_horiz </span>
+          </div>
+          <div class="videoFooter__actionsRight">
+            <div class="videoFooter__stat">
+              <span class="material-icons"> favorite </span>
+              <p>{{post.likes.count}}</p>
+            </div>
+            <div class="videoFooter__stat">
+              <span class="material-icons"> mode_comment </span>
+              <p>20</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- footer ends -->
+    </div>
+    {% endfor %}
+  </div>
+  <script>
+    const videos = document.querySelectorAll('video');
+
+    for (const video of videos) {
+      video.addEventListener('click', function () {
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

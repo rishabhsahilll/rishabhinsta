@@ -5,10 +5,12 @@ app_name = "blog"
 
 urlpatterns = [
     path('', views.home_view, name='home'),  
+    path('short/', views.time_pass, name='short'),  
     path('p/<slug:slug>/', views.post_detail_view, name='post-detail'),  
     path('twit/new/', views.twit_create_view, name='twit-create'), 
     path('twit/<slug:slug>/', views.twit_detail_view, name='twit-detail'), 
-    path('post/new/', views.post_create_view, name='post-create'),
+    path('image/new/', views.post_create_view, name='post-create'),
+    path('video/new/', views.video_create_view, name='video-create'),
     path('post/<int:pk>/update/', views.post_update_view, name='post-update'),  
     path('post/<int:pk>/delete/', views.post_delete_view, name='post-delete'), 
     path('search/users/', views.search_view, name='search'), 

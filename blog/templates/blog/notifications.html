@@ -1,5 +1,5 @@
 {% extends "blog/base.html" %}
-{% block title %}<title> @{{request.user.username}}'s notifications- rishabh-insta</title>{% endblock %}
+{% block title %}<title> @{{request.user.username}}'s notifications- Livyn</title>{% endblock %}
 
 {% block content %}
       <div class="content-section overflow-auto infinite-container">
@@ -11,14 +11,19 @@
           <p class="notification-list-items-unread infinite-item">
           {% endif %}
 
-            <a href="{% url 'profile' notification.sender.username %}" style="text-decoration: blink;">{{notification.sender.username}}</a> {{notification.action}} 
+            <a href="{% url 'profile' notification.sender.username %}" style="text-decoration: blink;">{{notification.sender.username}}
+            {% if notification.sender.is_staff %}
+              <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1PX;">
+            {% else %}
+                {% endif %}
+            </a> {{notification.action}}
             {% if notification.post %}
-             <span class="post-title-notify"><a href="{% url 'blog:post-detail' notification.post.slug %}">"{{notification.post.title}}".</a></span>
+             <span class="post-title-notify"><a href="{% url 'blog:post-detail' notification.post.slug %}">"<span class="format-text">{{notification.post.title}}</span>".</a></span>
             {% endif %}
-             <br><small>({{notification.timestamp|date:"D, d M, g:i a"}})</small>
+             <br><small class="text-muted">{{ notification.timestamp|timesince }} ago</small>
           </p>
         {% empty %}
-        <p class="notification-list-items-unread">No notifications yet! Welcome to rishabh-insta.</p>
+        <p class="notification-list-items-unread">No notifications yet! Welcome to Livyn.</p>
         {% endfor %}
       </div>
 
@@ -28,7 +33,7 @@
       {% if notifications.has_next %}
         <a class="infinite-more-link" style="display: none;" href="?page={{ notifications.next_page_number }}">More</a>
       {% endif %}
-      
+
 {% endblock content %}
 {% block script %}
         <script>
@@ -54,5 +59,25 @@
             }
           });
       </script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const formatText = (text) => {
+          // Replace *** with <strong>
+          text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          // Replace __ with <em>
+          text = text.replace(/__(.*?)__/g, '<em>$1</em>');
+          // Replace ` with <small>
+          text = text.replace(/`(.*?)`/g, '<small>$1</small>');
+          return text;
+      };
+
+      // Apply formatting to the specific h1 element
+      document.querySelectorAll('.format-text').forEach(element => {
+          element.innerHTML = formatText(element.innerHTML);
+      });
+  });
+</script>
 
 {% endblock %}

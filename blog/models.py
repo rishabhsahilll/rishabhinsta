@@ -9,24 +9,30 @@ from imagekit.processors import ResizeToFill,Transpose
 from django.db.models.signals import post_save,pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+from django.urls import reverse
+from imagekit.models import ImageSpecField
+from imagekit.processors import Transpose, ResizeToFill
 
 class Post(models.Model):
-    title = models.CharField(max_length=100)
-    slug = models.SlugField(null=True,unique=True,max_length=111)
-    content =  models.TextField()
-    image =  models.ImageField(upload_to='post_images')
+    title = models.CharField(max_length=100, blank=True, null=True)
+    slug = models.SlugField(null=True, unique=True, max_length=111)
+    content = models.TextField(max_length=1000, blank=True, null=True)
+    image = models.ImageField(upload_to='post_images', blank=True, null=True)
+    video = models.FileField(upload_to='post_videos', blank=True, null=True)  # New field for video uploads
     image_thumbnail = ImageSpecField(source='image',
                                       processors=[
-                                        Transpose(),
-                                        ResizeToFill(1000, 500)
-                                        ],
+                                          Transpose(),
+                                          ResizeToFill(1000, 500)
+                                      ],
                                       format='JPEG',
                                       options={'quality': 70})
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    likes = models.ManyToManyField(User, related_name='likes',blank=True)
-    tagged_users = models.ManyToManyField(User, related_name='tagged_users',blank=True)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+    tagged_users = models.ManyToManyField(User, related_name='tagged_users', blank=True)
 
     @property
     def total_likes(self):
@@ -35,22 +41,20 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-
     def get_absolute_url(self):
         return reverse('blog:post-detail', kwargs={'slug': self.slug})
 
     def whatsapp_share_url(self):
-        url = "https://wa.me/?text=https://rishabhinsta.pythonanywhere.com"+self.get_absolute_url()
+        url = "https://wa.me/?text=https://livyn.pythonanywhere.com" + self.get_absolute_url()
         return url
 
     def facebook_share_url(self):
-        url = "https://www.facebook.com/sharer/sharer.php?u=https://rishabhinsta.pythonanywhere.com"+self.get_absolute_url()
+        url = "https://www.facebook.com/sharer/sharer.php?u=https://livyn.pythonanywhere.com" + self.get_absolute_url()
         return url
 
     def twitter_share_url(self):
-        url = "https://twitter.com/intent/tweet?text=https://rishabhinsta.pythonanywhere.com"+self.get_absolute_url()
+        url = "https://twitter.com/intent/tweet?text=https://livyn.pythonanywhere.com" + self.get_absolute_url()
         return url
-
 
 class Twit(models.Model):
     title = models.CharField(max_length=100)
@@ -72,15 +76,15 @@ class Twit(models.Model):
         return reverse('blog:twit-detail', kwargs={'slug': self.slug})
 
     def whatsapp_share_url(self):
-        url = "https://wa.me/?text=https://rishabhinsta.pythonanywhere.com"+self.get_absolute_url()
+        url = "https://wa.me/?text=https://antisocialmedia.pythonanywhere.com"+self.get_absolute_url()
         return url
 
     def facebook_share_url(self):
-        url = "https://www.facebook.com/sharer/sharer.php?u=https://rishabhinsta.pythonanywhere.com"+self.get_absolute_url()
+        url = "https://www.facebook.com/sharer/sharer.php?u=https://antisocialmedia.pythonanywhere.com"+self.get_absolute_url()
         return url
 
     def twitter_share_url(self):
-        url = "https://twitter.com/intent/tweet?text=https://rishabhinsta.pythonanywhere.com"+self.get_absolute_url()
+        url = "https://twitter.com/intent/tweet?text=https://antisocialmedia.pythonanywhere.com"+self.get_absolute_url()
         return url
 
 
@@ -107,17 +111,30 @@ class Notification(models.Model):
 
 
 
+
 REASON = [
-
-    ('SPAM','SPAM'),
-    ('INAPPROPRIATE','INAPPROPRIATE'),
-
+    ('SPAM', 'SPAM'),
+    ('INAPPROPRIATE', 'INAPPROPRIATE'),
+    ('HARASSMENT', 'HARASSMENT'), 
+    ('HATE SPEECH', 'HATE SPEECH'), 
+    ('FAKE NEWS', 'FAKE NEWS'), 
+    ('IMPERSONATION', 'IMPERSONATION'), 
+    ('OBSCENE CONTENT', 'OBSCENE CONTENT'),  
+    ('SEXUAL CONTENT', 'SEXUAL CONTENT'),  
+    ('VIOLENCE', 'VIOLENCE'), 
+    ('PLAGIARISM', 'PLAGIARISM'), 
+    ('SCAM', 'SCAM'),
+    ('UNSAFE LINKS', 'UNSAFE LINKS'), 
+    ('MALICIOUS CONTENT', 'MALICIOUS CONTENT'),  
+    ('THREATENING BEHAVIOR', 'THREATENING BEHAVIOR'),  
+    ('MATURE CONTENT', 'MATURE CONTENT'),  
+    ('SELF-HARM', 'SELF-HARM')
 ]
 
 
 class PostReport(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    reason = models.CharField(max_length=13,choices=REASON)
+    reason = models.CharField(max_length=50,choices=REASON)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     date_reported = models.DateTimeField(default=timezone.now)
 
@@ -176,7 +193,7 @@ def sulg_generator(sender, instance, *args, **kwargs):
 
 class TwitReport(models.Model):
     post = models.ForeignKey(Twit, on_delete=models.CASCADE)
-    reason = models.CharField(max_length=13,choices=REASON)
+    reason = models.CharField(max_length=50,choices=REASON)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     date_reported = models.DateTimeField(default=timezone.now)
 

@@ -1,62 +1,483 @@
 {% extends "blog/base.html" %}
 {% load static %}
 {% block title %}
-  <title>rishabh-insta</title>
-  <meta name="google-site-verification" content="GedPaRkoPpgoSh8qzpNe2KM5gomtmE6Ag_2WQZvqiuY" />
+<title>Livyn</title>
+<meta name="google-site-verification" content="GedPaRkoPpgoSh8qzpNe2KM5gomtmE6Ag_2WQZvqiuY" />
 {% endblock %}
 {% block content %}
-  <div class="infinite-container">
-    {% for post in posts %}
-    <div class="article-div infinite-item" name="{{post.id}}">
-        <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2"
-                 href="{% url 'profile' post.author.username %}">{{ post.author }}
-              </a>
-              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}
-              </small>
-            </div>
-            <div class="img-heading-wrap">
-              <div class="article-post-img">
-                <img class="post-img" src="{{post.image.url}}">
-              </div>
-              <p class="h-font">
-                <a class="article-title"
-                     href="{% url 'blog:post-detail' post.slug %}">{{ post.title }}
-                  </a>
+<div class="infinite-container">
+  {% for post in posts %}
+  <div class="article-div infinite-item" name="{{post.id}}">
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+          <div class="author-info">
+            <a class="link-style-none" href="{% url 'profile' post.author.username %}">
+              <img class="rounded-circle article-img-comment" src="/media/{{ post.author.profile.image }}" width="55">
+              <span class="mr-2">{{ post.author }}
+                {% if post.author.is_staff %}
+                  <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png" style="width: 15px; height: 15px; padding-right: 1px;">
+                {% endif %}
+              </span>
+            </a>
+          </div>
+        </div>
+        
+        <hr style="border: 1px solid #e7e7e7;">
+        <div class="img-heading-wrap">
+          {% if post.title %}
+          <a href="{% url 'blog:post-detail' post.slug %}" style="text-decoration: none; color: black;"
+            onmouseover="this.style.textDecoration='none'" onmouseout="this.style.textDecoration='none'">
+            <h3 class="article-title format-text">{{ post.title }}</h3>
+          </a>
+          {% if post.video %}
+          <!-- <hr> -->
+           <br>
+          <video class="post-image-detail" muted loop playsinline preload="auto">
+            <source src="{{ post.video.url }}" type="video/mp4">
+          </video>
+          {% elif post.image %}
+          <!-- <hr> -->
+           <br>
+          <img class="post-image-detail" src="{{post.image.url}}">
+          {% endif %}
+          {% endif %}
+        </div>
+        <!-- <br> -->
+         <!-- <hr> -->
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div class="post-applause-details">
+            <a href="" name="{{post.id}}" id="like{{post.id}}" class="like">
+              <svg xmlns="http://www.w3.org/2000/svg" id="unliked{{post.id}}" width="30" height="30" fill="currentColor"
+                class="text-danger bi bi-heart" viewBox="0 0 16 16">
+                <path
+                  d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15">
+                </path>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" id="liked{{post.id}}" width="30" height="30" fill="currentColor"
+                class="text-danger bi bi-heart-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314">
+                </path>
+              </svg>
+            </a>
+            <div id="likes-container">
+              <p id="like-count{{ post.id }}" class="like-text" style="cursor: pointer;">
+                {% if post.likes.count == 1 %}
+                {{ post.likes.count }} Like
+                {% else %}
+                {{ post.likes.count }} Likes
+                {% endif %}
               </p>
+              
+              {% if post.likes.count > 0 %}
+              <div id="likes-popup{{ post.id }}" class="popup" style="display: none;">
+                <h4>Other Likes:</h4>
+                <ul>
+                  {% for user in post.likes.all %}
+                  <li>
+                    <div class="comments-inside">
+                      <a class="link-style-none" href="{% url 'profile' user.username %}">
+                        {% if user.profile.image_thumbnail_user %}
+                        <img class="rounded-circle article-img-comment" src="/media/{{user.profile.image}}" width="55">
+                        {% else %}
+                        <img class="rounded-circle article-img-comment"
+                          src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                          width="55">
+                        {% endif %}
+                      </a>
+                      <span class="userlikesid" style=" padding-right: 1px; margin-left: 2px; margin-top: 1px;">
+                        @{{ user.username }}
+                        {% if user.is_staff %}
+                        <img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png"
+                          style="width: 15px; height: 15px;">
+                        
+                        {% else %}
+                        {% endif %}
+                        <br>
+                        <span>{{user.profile.name}}</span>
+                      </span>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% else %}
+              {% endif %}
             </div>
-            <a class="read-more" href="{% url 'blog:post-detail' post.slug %}"><small>Read More</small></a>
-            <div class="post-applause">
-              <span class="badge badge-secondary">{{post.likes.count}} INSTA Claps</span>
+            <small class="text-muted" style="margin-left: -101px;margin-top: 40px;margin-bottom: 9px;">{{ post.date_posted|timesince }} ago</small>
+         <!-- This will be updated with JS -->
+     </small>
+     
+          </div>
+          <div class="post-share-comment">
+            <a class="#comments" href="{% url 'blog:post-detail' post.slug %}"
+              style="margin-left: 2px; margin-right: 5px;">
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" id="comments" width="30" height="30"
+                fill="#333538" class="bi bi-messenger" viewBox="0 0 16 16">
+                <path
+                  d="M0 7.76C0 3.301 3.493 0 8 0s8 3.301 8 7.76-3.493 7.76-8 7.76c-.81 0-1.586-.107-2.316-.307a.64.64 0 0 0-.427.03l-1.588.702a.64.64 0 0 1-.898-.566l-.044-1.423a.64.64 0 0 0-.215-.456C.956 12.108 0 10.092 0 7.76m5.546-1.459-2.35 3.728c-.225.358.214.761.551.506l2.525-1.916a.48.48 0 0 1 .578-.002l1.869 1.402a1.2 1.2 0 0 0 1.735-.32l2.35-3.728c.226-.358-.214-.761-.551-.506L9.728 7.381a.48.48 0 0 1-.578.002L7.281 5.98a1.2 1.2 0 0 0-1.735.32z" />
+              </svg>
+            </a>
+            <a data-target="#ShareModalCenter{{ post.id }}" data-toggle="modal">
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 172 172"
+                style=" fill:#000000;">
+                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                  stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                  font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                  style="mix-blend-mode: normal">
+                  <path d="M0,172v-172h172v172z" fill="none"></path>
+                  <g>
+                    <path
+                      d="M2.65391,86c0,-46.02344 37.32266,-83.34609 83.34609,-83.34609c46.02344,0 83.34609,37.32266 83.34609,83.34609c0,46.02344 -37.32266,83.34609 -83.34609,83.34609c-46.02344,0 -83.34609,-37.32266 -83.34609,-83.34609z"
+                      fill="#333333"></path>
+                    <path
+                      d="M51.86875,68.22891c-9.98168,0 -18.07344,8.09175 -18.07344,18.07344c0,9.98168 8.09175,18.07344 18.07344,18.07344c9.98168,0 18.07344,-8.09175 18.07344,-18.07344c0,-9.98168 -8.09175,-18.07344 -18.07344,-18.07344zM107.06328,36.07969c-9.98168,0 -18.07344,8.09175 -18.07344,18.07344c0,9.98168 8.09175,18.07344 18.07344,18.07344c9.98168,0 18.07344,-8.09175 18.07344,-18.07344c0,-9.98168 -8.09175,-18.07344 -18.07344,-18.07344zM107.06328,99.77344c-9.98168,0 -18.07344,8.09175 -18.07344,18.07344c0,9.98168 8.09175,18.07344 18.07344,18.07344c9.98168,0 18.07344,-8.09175 18.07344,-18.07344c0,-9.98168 -8.09175,-18.07344 -18.07344,-18.07344z"
+                      fill="#ffffff"></path>
+                    <g fill="#ffffff">
+                      <path d="M104.62301,49.36269l4.88567,8.3897l-55.18622,32.1372l-4.88567,-8.3897z">
+                      </path>
+                    </g>
+                    <g fill="#ffffff">
+                      <path d="M54.31946,81.5051l55.18622,32.1372l-4.88567,8.3897l-55.18622,-32.1372z">
+                      </path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </a>
+            <div class="modal fade" id="ShareModalCenter{{ post.id }}" tabindex="-1" role="dialog"
+              aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Share</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body" style="overflow: hidden;">
+                    <a href="{{ post.twitter_share_url }}" target="_blank">Share on Twitter!</a>
+                    <br>
+                    <a href="{{ post.facebook_share_url }}" target="_blank">Share on Facebook!</a>
+                    <br>
+                    <a href="{{ post.whatsapp_share_url }}" target="_blank">Share on WhatsApp!</a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </article>
+        </div>
       </div>
-    {% empty %}
-      {% include "blog/no_posts_home.html" %}
-    {% endfor %}
+    </article>
+    <hr class="mt-1 mb-1">
   </div>
-  <div class="loading" style="display: none;">
-    Loading...
-    <br>
-  </div>
-  {% if posts.has_next %}
-    <a class="infinite-more-link" style="display: none;" href="?page={{ posts.next_page_number }}">More</a>
-  {% endif %}
+  {% endfor %}
+</div>
+
+<div class="loading" style="display: none;">
+  Loading...
+  <br>
+</div>
+{% if posts.has_next %}
+<a class="infinite-more-link" style="display: none;" href="?page={{ posts.next_page_number }}">More</a>
+{% endif %}
 {% endblock content %}
 
 {% block script %}
-      <script>
-          var infinite = new Waypoint.Infinite({
-            element: $('.infinite-container')[0],
-            onBeforePageLoad: function () {
-              $('.loading').show();
-            },
-            onAfterPageLoad: function ($items) {
-              $('.loading').hide();
+
+<script>
+  function toggleMute() {
+    var video = document.getElementById('myVideo');
+    video.muted = !video.muted; // Toggle the muted property
+  }
+</script>
+
+<script>
+  var infinite = new Waypoint.Infinite({
+    element: $('.infinite-container')[0],
+    onBeforePageLoad: function () {
+      $('.loading').show();
+    },
+    onAfterPageLoad: function ($items) {
+      $('.loading').hide();
+    }
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    // Initially hide/show based on whether the user liked the post
+    {% for post in posts %}
+    {% if user in post.likes.all %}
+    $('#unliked{{post.id}}').hide();
+    $('#liked{{post.id}}').show();
+    {% else %}
+    $('#liked{{post.id}}').hide();
+    $('#unliked{{post.id}}').show();
+    {% endif %}
+    {% endfor %}
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('.like').click(function (event) {
+      event.preventDefault();
+      const postId = $(this).attr('name'); // Post ID
+      console.log(postId)
+      $.ajax({
+        type: "POST",
+        url: "{% url 'blog:like' %}",
+
+        data: {
+          'pk': postId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function (response) {
+          // Select the correct like/unlike buttons
+          const likedButton = `#liked${postId}`;
+          const unlikedButton = `#unliked${postId}`;
+          const likeCount = `#like-count${postId}`;
+
+          // Update like count and button visibility based on response
+          if (response.like) {
+            $(likedButton).show();
+            $(unlikedButton).hide();
+          } else {
+            $(likedButton).hide();
+            $(unlikedButton).show();
+          }
+          // Update the like count text based on the count
+          if (response.likes_count === 0 || response.likes_count === 1) {
+            $(likeCount).text(response.likes_count + " Like");
+          } else {
+            $(likeCount).text(response.likes_count + " Likes");
+          }
+        },
+        error: function (rs, e) {
+          alert('Error in liking the post. Please try again.');
+        }
+      });
+    });
+  });
+
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".userlikesid").each(function (data) {
+      var UserReg = /(^|\s)@([\w\d-._@@]+)/g
+      var NewText = $(this).html().match(UserReg, "$1<a href='/$2/'>@$2</a>")
+      var NewText = $(this).html().replace(UserReg, "$1<a href='/$2/'>@$2</a>")
+      $(this).html(NewText)
+    })
+  })
+</script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".userlikesid").each(function (data) {
+      var LinkReg = /(https?:\/\/[^\s]+)/g;
+      var LinkText = $(this).html().match(LinkReg)
+      var LinkText = $(this).html().replace(LinkReg, "<a href=" + LinkText + ">" + LinkText + "</a>")
+      $(this).html(LinkText)
+    })
+  })
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const initializeObservers = () => {
+      const videos = document.querySelectorAll('video.post-image-detail');
+
+      // Log the total number of videos found
+      console.log("Total videos found: ", videos.length);
+
+      // Intersection Observer options
+      const options = {
+        root: null, // viewport as root
+        rootMargin: '0px',
+        threshold: 0.5 // Trigger when 50% of the video is visible
+      };
+
+      // Callback function for when video enters/leaves viewport
+      const callback = (entries, observer) => {
+        entries.forEach(entry => {
+          const video = entry.target;
+
+          if (entry.isIntersecting) {
+            console.log("Playing video:", video);
+            video.play().catch(err => console.error('Error playing the video:', err));
+            video.muted = false; // Unmute the video
+          } else {
+            console.log("Pausing video:", video);
+            video.pause();
+            video.muted = true; // Mute the video
+          }
+        });
+      };
+
+      // Create an IntersectionObserver instance
+      const observer = new IntersectionObserver(callback, options);
+
+      // Observe each video element
+      videos.forEach(video => {
+        observer.observe(video);
+        console.log("Observing video:", video);
+      });
+
+      // Initially, mute and pause all videos
+      videos.forEach(video => {
+        video.muted = true;
+        video.pause();
+      });
+    };
+
+    // Initialize the observers when the DOM is fully loaded
+    setTimeout(initializeObservers, 500); // Delay by 500ms to ensure videos are loaded
+
+    // // Re-initialize the observers when new videos are loaded via infinite scroll
+    // var infinite = new Waypoint.Infinite({
+    //     element: $('.infinite-container')[0],
+    //     onBeforePageLoad: function () {
+    //         $('.loading').show();
+    //     },
+    //     onAfterPageLoad: function ($items) {
+    //         $('.loading').hide();
+    //         setTimeout(initializeObservers, 500); // Re-initialize the observer for new videos
+    //     }
+    // });
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    $(".like-text").click(function (event) {
+      event.stopPropagation(); // Prevent event from bubbling
+
+      // Close any open popups
+      $(".popup").not($(this).next(".popup")).hide();
+
+      // Toggle the clicked popup
+      var popup = $(this).next(".popup");
+      popup.toggle(); // Show or hide the clicked popup
+    });
+
+    // Close popup when clicking outside of it
+    $(document).click(function () {
+      $(".popup").hide(); // Hide all popups
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    let lastTap = 0; // Store the time of the last tap
+    const tapDelay = 300; // Time delay for double tap in milliseconds
+
+    // Attach click event to the post image or video
+    $('.post-image-detail').on('click', function (event) {
+      const postId = $(this).closest('.article-div').attr('name'); // Get the post ID from the closest article div
+
+      const currentTime = new Date().getTime();
+      if (currentTime - lastTap < tapDelay) {
+        // Double tap detected
+        console.log("Double tap detected for post:", postId);
+
+        $.ajax({
+          type: "POST",
+          url: "{% url 'blog:like' %}",
+          data: {
+            'pk': postId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          dataType: "json",
+          success: function (response) {
+            // Select the correct like/unlike buttons
+            const likedButton = `#liked${postId}`;
+            const unlikedButton = `#unliked${postId}`;
+            const likeCount = `#like-count${postId}`;
+
+            // Update like count and button visibility based on response
+            if (response.like) {
+              $(likedButton).show();
+              $(unlikedButton).hide();
+            } else {
+              $(likedButton).hide();
+              $(unlikedButton).show();
             }
-          });
-      </script>
+
+            // Update the like count text
+            $(likeCount).text(response.likes_count + (response.likes_count === 1 ? " Like" : " Likes"));
+          },
+          error: function (rs, e) {
+            alert('Error in liking the post. Please try again.');
+          }
+        });
+      }
+      lastTap = currentTime; // Update the last tap time
+    });
+  });
+</script>
+
+<style>
+  .popup {
+    position: absolute;
+    /* Change to absolute to position relative to the button */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 1000;
+    width: 250px;
+    max-height: 300px;
+    /* Set a maximum height */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    /* Initially hidden */
+  }
+
+  .popup h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+  }
+
+  .popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .popup li {
+    padding: 5px 0;
+  }
+
+  .like-text:hover {
+    color: #0056b3;
+    /* Darker blue on hover */
+  }
+</style>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const formatText = (text) => {
+          // Replace *** with <strong>
+          text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          // Replace __ with <em>
+          text = text.replace(/__(.*?)__/g, '<em>$1</em>');
+          // Replace ` with <small>
+          text = text.replace(/`(.*?)`/g, '<small>$1</small>');
+          return text;
+      };
+
+      // Apply formatting to the specific h1 element
+      document.querySelectorAll('.format-text').forEach(element => {
+          element.innerHTML = formatText(element.innerHTML);
+      });
+  });
+</script>
+
+
 {% endblock %}

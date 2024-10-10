@@ -44,17 +44,17 @@ def quotes():
             return data
     except:
         return None
+    
 @login_required
 def home_view(request):
     user = request.user
-
     if user.is_authenticated:
         follows_users = user.profile.follows.all()
         follows_posts = Post.objects.filter(author_id__in=follows_users)
         user_posts = Post.objects.filter(author=user)
         post_list = (follows_posts|user_posts).distinct().order_by('-date_posted')
         page = request.GET.get('page', 1)
-        paginator = Paginator(post_list, 4)
+        paginator = Paginator(post_list, 9000000000000)
         try:
             posts = paginator.page(page)
         except PageNotAnInteger:
@@ -129,9 +129,9 @@ def post_create_view(request):
         return render(request,'blog/post_form.html',context)
 
 @login_required
-def twit_create_view(request):
+def video_create_view(request):
     if request.method == 'POST':
-        form = TwitForm(request.POST, request.FILES)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author=request.user
@@ -140,7 +140,26 @@ def twit_create_view(request):
             return HttpResponse(json.dumps(ctx), content_type='application/json')
 
     else:
-        form = TwitForm()
+        form = PostForm()
+        context = {
+            'form': form,
+            "quotes":quotes()
+        }
+        return render(request,'blog/video_form.html',context)
+    
+@login_required
+def twit_create_view(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author=request.user
+            post.save()
+            ctx = {'url':post.get_absolute_url()}
+            return HttpResponse(json.dumps(ctx), content_type='application/json')
+
+    else:
+        form = PostForm()
         context = {
             'form': form,
             "quotes":quotes()
@@ -209,7 +228,7 @@ def search_view(request):
     message = ""
     post_list = Post.objects.all().order_by('-pk');
     page = request.GET.get('page', 1)
-    paginator = Paginator(post_list, 4)
+    paginator = Paginator(post_list, 9000000000000)
     try:
         posts = paginator.page(page)
     except PageNotAnInteger:
@@ -353,3 +372,32 @@ def notifications_unread_count_view(request,username=None):
             "quotes":quotes()
         }
         return JsonResponse(data)
+
+
+@login_required
+def time_pass(request):
+    user = request.user
+
+    if user.is_authenticated:
+        follows_users = user.profile.follows.all()
+        follows_posts = Post.objects.filter(author_id__in=follows_users)
+        user_posts = Post.objects.filter(author=user)
+        post_list = (follows_posts|user_posts).distinct().order_by('-date_posted')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(post_list, 9000000000000)
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+
+
+        context = {
+                    'posts': posts,
+                    'quotes': quotes()
+
+            }
+        return render(request, 'blog/short.html', context)
+    else:
+        return redirect('login')

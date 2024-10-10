@@ -2,16 +2,53 @@
 
 <section>
 	<div class="">
-	  <div class="">
-	    Welcome <b>{{user.username}}</b>
-	  </div>
-	  <div class="card-body">
-	    <p class="card-text">Posts of your buddies will appear on this page.</p>
-	    <p class="card-text">To add or update your personal information <a href="{% url 'profile-update' %}">click here</a>.</p>
-	    <p>You can also search for your buddies and posts at <a href="{% url 'blog:search' %}">search</a> page.</p>
-	    <p>To add your first post click the button below.</p>
-	    <a href="{% url 'blog:post-create' %}" class="btn btn-primary">Add Post</a>
-	  </div>
-	</div>
-	<br>
+		<div class="">
+			Welcome <b>{{user.username}}
+				{% if user.is_staff %}
+				<img class="rounded-circle account-img-f" src="/media/profile_pics/tick.png"
+					style="width: 15px; height: 15px; padding-right: 1PX;">
+				{% else %}
+				{% endif %}</b></b>
+		</div>
+		<div class="card-body">
+			<p class="card-text">Posts of your users will appear on this page.</p>
+			<p class="card-text">To add or update your personal information <a href="{% url 'profile-update' %}">click
+					here</a>.</p>
+			<p>You can also search for your user and posts at <a href="{% url 'blog:search' %}">search</a> page.</p>
+			<p>To add your first post click the button below.</p>
+
+			<div class="btn-group">
+				<div class="d-flex">
+					<button style="height: 38.6px; width: 104px" type="button" class="btn btn-secondary dropdown-toggle"
+						data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20">
+						Add Post
+					</button>
+					<ul class="dropdown-menu" style="width: 80px">
+						<li>
+							<a class="dropdown-item" href="{% url 'blog:twit-create' %}" data-toggle="tooltip"
+								title="Add Video">
+								<button type="button" class="btn btn-primary btn-sm">Add Twit</button>
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'blog:post-create' %}" data-toggle="tooltip"
+								title="Add Photo">
+								<button type="button" class="btn btn-primary btn-sm">Add Photo</button>
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'blog:video-create' %}" data-toggle="tooltip"
+								title="Add Video">
+								<button type="button" class="btn btn-primary btn-sm">Add Video</button>
+							</a>
+						</li>
+					</ul>
+				</div>
+
+
+
+			</div>
+		</div>
+		<br>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

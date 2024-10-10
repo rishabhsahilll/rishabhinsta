@@ -1,7 +1,7 @@
 {% extends "blog/base.html" %}
 {% load crispy_forms_tags %}
  {% block title %}
-   <title>Twit * @{{request.user.username}} -  rishabh-insta</title> 
+   <title>Add post * @{{request.user.username}} -  Livyn</title>
  {% endblock %}
 {% block content %}
 
@@ -10,11 +10,15 @@
         <form action="{% url 'blog:twit-create' %}" method="POST" id="post-form">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Twit</legend>
-                {{form | crispy}}
+                <!-- {{form | crispy}} -->
+                <legend class="border-bottom mb-4">Add Twit</legend>
+                Twit*<br>
+                {{form.title}}<br>
+                Content*<br>
+                {{form.content}}<br>
             </fieldset>
             <div class="form-group" style="display: flex;justify-content: flex-end;">
-                <button class="btn btn-info btn-sm" type="submit" id="form-submit" style="padding: 5px 25px">Twit</button>
+                <button class="btn btn-info btn-sm" type="submit" id="form-submit" style="padding: 5px 25px">Post</button>
             </div>
         </form>
         <div class="loading-bar" style="display: none;">
@@ -23,10 +27,10 @@
             </div>
              <div><br><br>
                 <p>"If death strikes before I prove my blood, I swear I’ll kill Death."</p>
-                <p style="text-align: right;"><a href="http://instagram.com/ll._rsy_.ll">@Sahil Yadav</a></p>
+                <p style="text-align: right;"><a href="http://instagram.com/rishabhsahill">@Sahil Yadav</a></p>
             </div>
         </div>
-           
+
     </div>
 {% endblock content %}
 
@@ -37,7 +41,7 @@
         $form = $(this)
         var formData = new FormData(this);
         $.ajax({
-            xhr : function(){   
+            xhr : function(){
                 var xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener('progress',function(event){
                     if (event.lengthComputable){
@@ -50,8 +54,8 @@
                 });
                 return xhr;
             },
-            url : "{% url 'blog:twit-create' %}", 
-            type : "POST", 
+            url : "{% url 'blog:twit-create' %}",
+            type : "POST",
             data: formData,
             processData: false,
             contentType: false,
@@ -63,7 +67,7 @@
             }
         });
     });
-   
+
 </script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -74,7 +78,7 @@
         var img = document.createElement("IMG");
         img.src = '{{ post.image_thumbnail_detail.url }}';
         img.setAttribute('class', 'post-img-update');
-        $('.currentPhoto').prepend('<br>Change Image'); 
+        $('.currentPhoto').prepend('<br>Change Image');
         $('.currentPhoto').prepend(img);
     });
 </script>

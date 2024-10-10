@@ -5,7 +5,7 @@ from .models import Comment, PostReport, Post, Twit, TwitComment, TwitReport
 class PostForm(forms.ModelForm):
 	class Meta:
 		model = Post
-		fields = ['title','content','image']
+		fields = ['title','content','image','video']
 
 class CommentForm(forms.ModelForm):
 	class Meta:
@@ -17,7 +17,7 @@ class ReportPostForm(forms.ModelForm):
 		model = PostReport
 		fields = ['reason']
 
-# Twit Features 
+# Twit Features
 
 class TwitForm(forms.ModelForm):
 	class Meta:
