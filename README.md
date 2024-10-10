@@ -11,6 +11,7 @@ This project is basic social media features.
 - Post like
 - Post comment
 - User profile
+- Birthday countdown
 - User follow / unfollows
 - Post search
 - User search
